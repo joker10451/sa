@@ -1,0 +1,92 @@
+name: Decompile Stars localization
+
+on:
+  push:
+    branches:
+      - feat/stars-ru-localization
+    paths:
+      - 'Stars New Skills All-in-One.sml'
+      - '.github/workflows/decompile-stars.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  decompile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/stars-ru-localization
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Extract embedded mod assembly from SML
+        shell: python
+        run: |
+          import io
+          import os
+          import struct
+
+          path = "Stars New Skills All-in-One.sml"
+          data = open(path, "rb").read()
+          stream = io.BytesIO(data)
+
+          if stream.read(4) != b"MSLM":
+              raise SystemExit("Not an MSL .sml container")
+
+          raw = stream.read(24)
+          size = 24
+          for i in range(1, 24):
+              b = raw[i]
+              if b != 0x2E and not (0x30 <= b <= 0x39):
+                  size = i
+                  break
+
+          version = raw[:size].decode("ascii")
+          stream.seek(4 + size)
+
+          sections = ["textures", "scripts", "codes", "assembly_chunks"]
+          entries = []
+          for sec in sections:
+              count = struct.unpack("<i", stream.read(4))[0]
+              for _ in range(count):
+                  name_len = struct.unpack("<i", stream.read(4))[0]
+                  name = stream.read(name_len).decode("utf-8", errors="replace")
+                  offset, length = struct.unpack("<ii", stream.read(8))
+                  entries.append((sec, name, offset, length))
+
+          files_offset = stream.tell()
+          last_end = max((off + length for _, _, off, length in entries), default=0)
+          stream.seek(files_offset + last_end)
+          asm_len = struct.unpack("<i", stream.read(4))[0]
+          asm = stream.read(asm_len)
+
+          os.makedirs("work", exist_ok=True)
+          open("work/StarsNewSkills.dll", "wb").write(asm)
+
+          print(f"SML version: {version}")
+          print(f"Embedded assembly: {len(asm)} bytes")
+
+      - name: Install ILSpy CLI
+        run: dotnet tool install ilspycmd --tool-path ./.tools
+
+      - name: Decompile Stars.Stars
+        run: |
+          mkdir -p decompiled
+          ./.tools/ilspycmd -t Stars.Stars work/StarsNewSkills.dll > decompiled/Stars.Stars.cs
+
+      - name: Commit decompiled source
+        run: |
+          git config user.name "stars-ru-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add decompiled/Stars.Stars.cs
+          if git diff --cached --quiet; then
+            echo "No decompiled changes"
+            exit 0
+          fi
+          git commit -m "chore: decompile Stars localization source"
+          git push origin HEAD:feat/stars-ru-localization
