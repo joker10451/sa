@@ -1,0 +1,354 @@
+[
+  {
+    "Type": "LocalizationSkill",
+    "Id": "Aura_of_Unlife",
+    "Values": [
+      "Аура нежизни",
+      "После каждых ~w~3~/~ применённых заклинаний ~w~3-е~/~ заклинание той же школы мгновенно восстанавливает заклинателю и всей Нежити в поле зрения ~lg~9%~/~ от максимального запаса здоровья и снижает ~r~сопротивление нечестивому урону на 9%~/~ у всех врагов в поле зрения на ~w~9~/~ ходов.##Эффект складывается до ~w~5~/~ раз.##После каждых ~w~6~/~ применённых заклинаний ~w~6-е~/~ заклинание той же школы случайным образом воскрешает одну Нежить в поле зрения, мгновенно восстанавливая ей ~lg~33%~/~ от максимального запаса здоровья и ~bl~33%~/~ от максимального запаса энергии.##Прочность брони воскрешённой Нежити становится равной ~w~0%~/~, а время восстановления всех её способностей сокращается на ~w~50%~/~."
+    ]
+  },
+  {
+    "Type": "LocalizationSkill",
+    "Id": "Ghastly_Revelation",
+    "Values": [
+      "Жуткое откровение",
+      "Каждое ~w~третье~/~ заклинание одной и той же школы накладывает на случайного врага в поле зрения один из следующих эффектов на ~w~3~/~ хода:##~r~Откровение: Самоуверенность~/~: применение навыка ~w~Атаки~/~ или заклинания призывает на соседней клетке случайного слабого ~w~Призрака~/~.##~r~Откровение: Поспешность~/~: перемещение на другую клетку или применение ~w~Манёвра~/~ наносит ~ur~33 ед. нечестивого урона~/~.##~r~Откровение: Невезение~/~: неудачный удар, выстрел или заклинание увеличивает время восстановления всех способностей на ~r~2~/~ хода.##~r~Откровение: Потери~/~: использование или бросок предмета вызывает ~r~Замешательство~/~, ~r~Слабость~/~ или ~r~Истощение~/~ на ~w~10~/~ ходов либо ~r~Слепоту~/~ на ~w~3~/~ хода."
+    ]
+  },
+  {
+    "Type": "LocalizationSkill",
+    "Id": "Summon_Servant",
+    "Values": [
+      "Эдикт Хелы",
+      "Провозглашает ложный эдикт от имени Хелы, богини Смерти, призывая ~ur~Нежить~/~ на выбранную клетку. Вид призванной ~ur~Нежити~/~ зависит от ~lg~«Силы магии»~/~ и ~lg~«Уровня»~/~ заклинателя.##Если призванную таким образом ~ur~Нежить~/~ ударит её хозяин, когда поблизости нет врагов, она ~r~мгновенно погибнет~/~.##Только ~ur~Нежить~/~, призванную этим навыком, можно воскресить заклинаниями той же школы."
+    ]
+  },
+  {
+    "Type": "LocalizationSkill",
+    "Id": "Come_My_Servants",
+    "Values": [
+      "Ко мне, фанатики!",
+      "Призывает ~w~Проселита~/~ на выбранную клетку и ещё одного в радиусе ~w~4 клеток~/~ от заклинателя. Вид призванных ~w~Проселитов~/~ зависит от ~lg~«Силы магии»~/~ и ~lg~«Уровня»~/~ заклинателя.##Если призванного таким образом ~w~Проселита~/~ ударит его хозяин, когда поблизости нет врагов, он ~r~мгновенно погибнет~/~."
+    ]
+  },
+  {
+    "Type": "LocalizationModifier",
+    "Id": "o_db_revelation_Attack",
+    "Values": [
+      "Откровение: Самоуверенность",
+      "Применение навыка ~w~Атаки~/~ или заклинания призывает на соседней клетке случайного слабого ~w~Призрака~/~."
+    ]
+  },
+  {
+    "Type": "LocalizationTextTree",
+    "Id": "Necromancy",
+    "Values": [
+      "Некромантия",
+      "Некромантия, берущая начало в древней аксонской магии, изначально предназначалась для извлечения знаний у мёртвых — вне зависимости от эпохи и земли, где те жили. Сегодня это почти забытое искусство сохранилось лишь как оккультное учение, отвергаемое большей частью общества Альдора.##~y~Основные направления:~/~#~w~Призыв~/~, ~w~Проклятия~/~, ~w~Контроль~/~"
+    ]
+  },
+  {
+    "Type": "LocalizationTextTree",
+    "Id": "Proselyte Magic",
+    "Values": [
+      "Проселит: Леность",
+      "Никто не знает, как впервые возникла и развилась магическая традиция Проселитов. Жители Альдора знают наверняка лишь одно: эта магия всегда была связана с кровью, фанатизмом и злом.##~y~Основные направления:~/~#~w~Призыв~/~, ~w~Проклятия~/~, ~w~Контроль~/~"
+    ]
+  },
+  {
+    "Type": "LocalizationTextTree",
+    "Id": "Proselyte Combat",
+    "Values": [
+      "Проселит: Чревоугодие",
+      "Проселиты черпают силу из жажды крови и ран, а также из ненасытного голода. Те, кого после обращения полностью поглощает эта сила, нередко сами становятся рабами крови.##~y~Основные направления:~/~#~w~Высокий урон~/~, ~w~Травмы~/~, ~w~Кровотечение~/~"
+    ]
+  },
+  {
+    "Type": "LocalizationTextTree",
+    "Id": "Proselyte Gift",
+    "Values": [
+      "Проселит: Дар",
+      "Проселиты, наиболее обласканные Двором, получают право принять участие в Обряде Вознесения. Багровый Дар навеки уродует их тела, но наделяет чудовищной силой, живым пламенем и иными способностями. В отличие от самих Проселитов, добровольно отдающих себя этой силе, стороннему наблюдателю остаётся лишь гадать, действительно ли благосклонность Двора не требует платы.##~y~Основные направления:~/~#~w~Вознесение~/~, ~w~Вера~/~, ~w~Порча~/~"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Darkbolt",
+    "Values": [
+      "HE...Av..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Death_Touch",
+    "Values": [
+      "HE...Hs..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Essence_Leech",
+    "Values": [
+      "HELA·MOGO!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Essence_Leech",
+    "Values": [
+      "HE..Mog..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Dark_Blessing",
+    "Values": [
+      "HE...Ble..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Curse_of_Weakness",
+    "Values": [
+      "HELA·Agony!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Curse_of_Weakness",
+    "Values": [
+      "HE...gony..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Curse",
+    "Values": [
+      "HE...Tho..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Sigil_Of_Binding",
+    "Values": [
+      "HELA·Cifer!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Sigil_Of_Binding",
+    "Values": [
+      "HE...Cif..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Mark_of_the_Feast",
+    "Values": [
+      "Sov...Vam..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Life_Leech",
+    "Values": [
+      "Wura...Los..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Deadly_Premonition",
+    "Values": [
+      "HELA·Valimar!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Deadly_Premonition",
+    "Values": [
+      "HE...Vmar..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Final_Stand",
+    "Values": [
+      "HELA·Devono!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Final_Stand",
+    "Values": [
+      "HE...vono..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Wraith_Summoning",
+    "Values": [
+      "HELA·Abysso!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Wraith_Summoning",
+    "Values": [
+      "He...bysso..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Sign_of_Darkness",
+    "Values": [
+      "HELA·Mosquen!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Sign_of_Darkness",
+    "Values": [
+      "H...Mos..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Summon_Servant",
+    "Values": [
+      "HELA·Saruto!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Summon_Servant",
+    "Values": [
+      "H...ELA..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Come_My_Servants",
+    "Values": [
+      "Ye...Tro..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Come_My_Servants",
+    "Values": [
+      "YESO·TROPH!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Embrace_the_Murk",
+    "Values": [
+      "Velum·Noctis·Morvha!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Embrace_the_Murk",
+    "Values": [
+      "Vel...Mor..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Summon_Thrall",
+    "Values": [
+      "Morvath·Khal·Vorun!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Summon_Thrall",
+    "Values": [
+      "Mor...Vor..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Apocalyptic_Sermon",
+    "Values": [
+      "Vesper·Cinis·Aetern!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Apocalyptic_Sermon",
+    "Values": [
+      "Ves...Aet..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Unholy_Communion",
+    "Values": [
+      "Profan·Sanguis·Nexum!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Unholy_Communion",
+    "Values": [
+      "Pro...Nex..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Spitter_Leech",
+    "Values": [
+      "Ulkar·Vesk·Skarath!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Spitter_Leech",
+    "Values": [
+      "Ul...Skar..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Summon_the_Bloodgorger_Worm",
+    "Values": [
+      "Vermis·Sanguis·Vorax!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Summon_the_Bloodgorger_Worm",
+    "Values": [
+      "Ver...Vor..."
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Oath_of_Retribution",
+    "Values": [
+      "Слава величию Двора!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Oath_of_Retribution",
+    "Values": [
+      "Слава... Двору!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "Judgement_Day",
+    "Values": [
+      "Великий Двор, даруй мне вознесение!"
+    ]
+  },
+  {
+    "Type": "LocalizationSpeech",
+    "Id": "MC_Judgement_Day",
+    "Values": [
+      "Наконец-то... вознесение!"
+    ]
+  }
+]
