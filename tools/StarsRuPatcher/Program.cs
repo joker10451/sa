@@ -14,15 +14,21 @@ internal static class Program
 
     private static int Main(string[] args)
     {
-        if (args.Length != 3)
+        if (args.Length is < 3 or > 4)
         {
-            Console.Error.WriteLine("Usage: StarsRuPatcher <input.sml> <translations.json> <output.sml>");
+            Console.Error.WriteLine("Usage: StarsRuPatcher <input.sml> <translations.json> <output.sml> [--start-necromancer]");
             return 2;
         }
 
         var inputPath = args[0];
         var translationsPath = args[1];
         var outputPath = args[2];
+        var startNecromancer = args.Length == 4 && string.Equals(args[3], "--start-necromancer", StringComparison.Ordinal);
+        if (args.Length == 4 && !startNecromancer)
+        {
+            Console.Error.WriteLine($"Unknown option: {args[3]}");
+            return 2;
+        }
 
         var translations = JsonSerializer.Deserialize<List<Translation>>(
             File.ReadAllText(translationsPath, Encoding.UTF8),
@@ -93,6 +99,9 @@ internal static class Program
                     $"Patch accounting mismatch: expected {expectedDictionaries}, inserted {inserted}, already present {alreadyPresent}.");
             }
 
+            if (startNecromancer)
+                PatchStarterNecromancyBook(body.Instructions);
+
             using var output = new MemoryStream();
             asm.Write(output);
             patchedAssembly = output.ToArray();
@@ -103,7 +112,7 @@ internal static class Program
             Console.WriteLine($"Russian dictionary entries already present: {alreadyPresent}");
         }
 
-        ValidatePatchedAssembly(patchedAssembly, translations);
+        ValidatePatchedAssembly(patchedAssembly, translations, startNecromancer);
 
         Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(outputPath))!);
         WritePatchedSml(sml, layout, patchedAssembly, outputPath);
@@ -275,7 +284,7 @@ internal static class Program
         (instruction.OpCode == OpCodes.Ldc_I4 && instruction.Operand is int value && value == 0) ||
         (instruction.OpCode == OpCodes.Ldc_I4_S && instruction.Operand is sbyte small && small == 0);
 
-    private static void ValidatePatchedAssembly(byte[] assemblyBytes, IReadOnlyList<Translation> translations)
+    private static void ValidatePatchedAssembly(byte[] assemblyBytes, IReadOnlyList<Translation> translations, bool startNecromancer)
     {
         using var stream = new MemoryStream(assemblyBytes, writable: false);
         using var asm = AssemblyDefinition.ReadAssembly(stream);
@@ -300,6 +309,71 @@ internal static class Program
         }
 
         Console.WriteLine($"Validation OK: {validated} Russian dictionary entries present.");
+
+        if (startNecromancer)
+        {
+            var hasPlayerTarget = instructions.Any(i => i.OpCode == OpCodes.Ldstr &&
+                string.Equals(i.Operand as string, "gml_Object_o_player_Create_0", StringComparison.Ordinal));
+            var hasStarterGuard = instructions.Any(i => i.OpCode == OpCodes.Ldstr &&
+                (i.Operand as string)?.Contains("stars_necromancy_start_book_given", StringComparison.Ordinal) == true);
+
+            if (!hasPlayerTarget || !hasStarterGuard)
+                throw new InvalidOperationException("Starter necromancer validation failed.");
+
+            Console.WriteLine("Starter necromancer validation OK: player Create hook + one-time guard present.");
+        }
+    }
+
+    private static void PatchStarterNecromancyBook(Mono.Collections.Generic.Collection<Instruction> instructions)
+    {
+        const string originalTarget = "gml_Object_o_runaway_wizzard_Create_0";
+        const string originalMatch = "scr_inventory_add_item(o_inv_map_osbrook)";
+        const string originalInsert = "scr_inventory_add_item(o_inv_lorebook_magic)";
+
+        var insertIndex = -1;
+        for (var i = 0; i < instructions.Count; i++)
+        {
+            if (instructions[i].OpCode == OpCodes.Ldstr &&
+                string.Equals(instructions[i].Operand as string, originalInsert, StringComparison.Ordinal))
+            {
+                insertIndex = i;
+                break;
+            }
+        }
+
+        if (insertIndex < 0)
+            throw new InvalidOperationException("Could not find the Stars necromancy lorebook injection.");
+
+        Instruction? targetInstruction = null;
+        Instruction? matchInstruction = null;
+
+        for (var i = insertIndex - 1; i >= Math.Max(0, insertIndex - 80); i--)
+        {
+            if (instructions[i].OpCode != OpCodes.Ldstr)
+                continue;
+
+            var value = instructions[i].Operand as string;
+            if (targetInstruction is null && string.Equals(value, originalTarget, StringComparison.Ordinal))
+                targetInstruction = instructions[i];
+            if (matchInstruction is null && string.Equals(value, originalMatch, StringComparison.Ordinal))
+                matchInstruction = instructions[i];
+
+            if (targetInstruction is not null && matchInstruction is not null)
+                break;
+        }
+
+        if (targetInstruction is null || matchInstruction is null)
+            throw new InvalidOperationException("Could not resolve the original Runaway Wizard lorebook patch sequence.");
+
+        targetInstruction.Operand = "gml_Object_o_player_Create_0";
+        matchInstruction.Operand = "event_inherited()";
+        instructions[insertIndex].Operand =
+            "if (!variable_global_exists(\"stars_necromancy_start_book_given\")) { " +
+            "global.stars_necromancy_start_book_given = true; " +
+            "if (!scr_instance_exists_item(o_inv_lorebook_magic)) scr_inventory_add_item(o_inv_lorebook_magic); " +
+            "}";
+
+        Console.WriteLine("Starter necromancer patch: lorebook will be granted from o_player Create.");
     }
 
     private sealed record SmlLayout(int AssemblyLengthOffset, int AssemblyStart, int AssemblyLength, int SuffixStart);
