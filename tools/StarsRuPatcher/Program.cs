@@ -177,38 +177,34 @@ internal static class Program
         Instruction localizationCtor)
     {
         var ctorIndex = instructions.IndexOf(localizationCtor);
-        var idIndex = -1;
-
-        for (var i = ctorIndex - 1; i >= Math.Max(0, ctorIndex - 600); i--)
-        {
-            if (instructions[i].OpCode == OpCodes.Ldstr &&
-                string.Equals(instructions[i].Operand as string, translation.Id, StringComparison.Ordinal))
-            {
-                idIndex = i;
-                break;
-            }
-        }
-
-        if (idIndex < 0)
-            throw new InvalidOperationException($"[{translation.Type}:{translation.Id}] id load not found.");
-
         var dictionaries = new List<Instruction>();
-        for (var i = idIndex + 1; i < ctorIndex; i++)
+
+        // C# evaluation order may construct the first dictionary before the localization ID
+        // string is loaded. Walk backwards from the already identified localization constructor
+        // and take exactly the dictionaries consumed by that constructor.
+        for (var i = ctorIndex - 1; i >= Math.Max(0, ctorIndex - 800); i--)
         {
             var instruction = instructions[i];
+
             if (instruction.OpCode == OpCodes.Newobj &&
                 instruction.Operand is MethodReference method &&
                 method.DeclaringType.FullName.StartsWith("System.Collections.Generic.Dictionary`2", StringComparison.Ordinal))
             {
                 dictionaries.Add(instruction);
+                if (dictionaries.Count == translation.Values.Length)
+                    break;
+            }
+
+            // Do not cross into a previous completed localization object.
+            if (instruction.OpCode == OpCodes.Newobj &&
+                instruction.Operand is MethodReference previousLocalization &&
+                previousLocalization.DeclaringType.Name.StartsWith("Localization", StringComparison.Ordinal))
+            {
+                break;
             }
         }
 
-        // LocalizationSpeech wraps the dictionary in a one-element array. Other supported
-        // localization objects contain exactly one dictionary per translated value.
-        if (dictionaries.Count > translation.Values.Length)
-            dictionaries = dictionaries.TakeLast(translation.Values.Length).ToList();
-
+        dictionaries.Reverse();
         return dictionaries;
     }
 
