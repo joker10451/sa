@@ -29,21 +29,29 @@ jobs:
         run: |
           dotnet run --project tools/StarsRuPatcher/StarsRuPatcher.csproj --configuration Release --             "Stars New Skills All-in-One.sml"             "translations/stars-new-skills.ru.json"             "dist/Stars New Skills All-in-One.sml"
 
+      - name: Build RU starter necromancer variant
+        run: |
+          dotnet run --project tools/StarsRuPatcher/StarsRuPatcher.csproj --configuration Release --             "Stars New Skills All-in-One.sml"             "translations/stars-new-skills.ru.json"             "dist/Stars New Skills All-in-One - RU Starter Necromancer.sml"             --start-necromancer
+
       - name: Verify SML header
         shell: python
         run: |
           from pathlib import Path
-          p = Path("dist/Stars New Skills All-in-One.sml")
-          data = p.read_bytes()
-          assert data[:4] == b"MSLM", data[:4]
-          print("Output size:", len(data))
-          print("MSLM header: OK")
+          for name in [
+              "Stars New Skills All-in-One.sml",
+              "Stars New Skills All-in-One - RU Starter Necromancer.sml",
+          ]:
+              p = Path("dist") / name
+              data = p.read_bytes()
+              assert data[:4] == b"MSLM", (name, data[:4])
+              print(name, "size:", len(data))
+              print(name, "MSLM header: OK")
 
       - name: Commit built RU mod
         run: |
           git config user.name "stars-ru-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add "dist/Stars New Skills All-in-One.sml"
+          git add "dist/Stars New Skills All-in-One.sml" "dist/Stars New Skills All-in-One - RU Starter Necromancer.sml"
           if git diff --cached --quiet; then
             echo "Built mod is unchanged"
             exit 0
